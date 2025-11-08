@@ -2,11 +2,13 @@ const express = require('express');
 const { body } = require('express-validator');
 const TransactionController = require('../controllers/transactionController');
 const authMiddleware = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
 // All transaction routes require authentication
 router.use(authMiddleware);
+router.use(apiLimiter);
 
 // Create transaction
 router.post(

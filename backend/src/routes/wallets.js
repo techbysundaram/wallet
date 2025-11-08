@@ -2,11 +2,13 @@ const express = require('express');
 const { body } = require('express-validator');
 const WalletController = require('../controllers/walletController');
 const authMiddleware = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
 // All wallet routes require authentication
 router.use(authMiddleware);
+router.use(apiLimiter);
 
 // Create wallet
 router.post(

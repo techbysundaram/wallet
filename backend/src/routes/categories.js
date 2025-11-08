@@ -2,11 +2,13 @@ const express = require('express');
 const { body } = require('express-validator');
 const CategoryController = require('../controllers/categoryController');
 const authMiddleware = require('../middleware/auth');
+const { apiLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
 // All category routes require authentication
 router.use(authMiddleware);
+router.use(apiLimiter);
 
 // Create category
 router.post(
