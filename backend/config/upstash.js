@@ -8,7 +8,7 @@ const redis = Redis.fromEnv();
 // Set up rate limiter
 const rateLimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(2, "60s"), // 2 requests per 60 seconds
+  limiter: Ratelimit.slidingWindow(10, "60s"), //Will add based on user IDs
 });
 
 export default rateLimit;
