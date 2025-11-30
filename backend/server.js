@@ -1,11 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import { sql } from "./config/db.js";
+import rateLimiter from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
 const app = express();
+
+//middleware
 app.use(express.json());
+app.use(rateLimiter);
+
 const PORT = process.env.PORT;
 
 async function initDB() {
@@ -95,6 +100,32 @@ app.delete("/api/transactions/:id", async (req, res) => {
     return res
       .status(500)
       .json({ message: "Error deleting transaction for user:", error });
+  }
+});
+
+app.get("/api/transactions/summary/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const balanceResult =
+      await sql`SELECT COALESCE(SUM(amount), 0) as balance FROM transactions where user_id = ${userId}`;
+
+    const incomeResult =
+      await sql`SELECT COALESCE(SUM(amount), 0) as income FROM transactions where user_id = ${userId} amount > 0`;
+
+    const expensesResult =
+      await sql`SELECT COALESCE(SUM(amount), 0) as income FROM transactions where user_id = ${userId} amount < 0`;
+
+    return res.status(201).json({
+      balance: balanceResult[0].balance,
+      income: incomeResult[0].income,
+      expenses: expensesResult[0].expenses,
+    });
+  } catch (error) {
+    console.error("Error getting transaction summary for user:", error);
+    return res
+      .status(500)
+      .json({ message: "Error getting transaction summary for user:", error });
   }
 });
 
