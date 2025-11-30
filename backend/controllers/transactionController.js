@@ -1,9 +1,6 @@
-import express from "express";
 import { sql } from "../config/db.js";
 
-const router = express.Router();
-
-router.get("/api/transactions", async (req, res) => {
+export async function getAllTransactions(req, res) {
   try {
     const result = await sql`SELECT * FROM "transactions"`;
     return res.status(200).json({ result });
@@ -11,9 +8,9 @@ router.get("/api/transactions", async (req, res) => {
     console.error("Error fetching transactions", error);
     return res.status(500).json({ message: "Error fetching transactions" });
   }
-});
+}
 
-router.post("/", async (req, res) => {
+export async function postATransaction(req, res) {
   try {
     const { title, amount, category, user_id } = req.body;
 
@@ -23,7 +20,7 @@ router.post("/", async (req, res) => {
 
     const transactions =
       await sql`INSERT INTO transactions(user_id,amount,category,title)
-     VALUES (${user_id},${amount},${category},${title})`;
+         VALUES (${user_id},${amount},${category},${title})`;
 
     console.log(transactions);
     return res.status(201).json(transactions[0]);
@@ -31,9 +28,8 @@ router.post("/", async (req, res) => {
     console.log("Error creating transaction", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-});
-
-router.get("/:userId", async (req, res) => {
+}
+export async function getTransactionByUserId(req, res) {
   try {
     const { userId } = req.params;
     const transaction =
@@ -46,9 +42,9 @@ router.get("/:userId", async (req, res) => {
       .status(500)
       .json({ message: "Error getting transaction for user:", error });
   }
-});
+}
 
-router.delete("/:id", async (req, res) => {
+export async function deleteTransactionById(req, res) {
   try {
     const { id } = req.params;
     if (isNaN(id)) {
@@ -69,9 +65,9 @@ router.delete("/:id", async (req, res) => {
       .status(500)
       .json({ message: "Error deleting transaction for user:", error });
   }
-});
+}
 
-router.get("/:userId", async (req, res) => {
+export async function getSummaryByUserId(req, res) {
   const { userId } = req.params;
 
   try {
@@ -95,6 +91,4 @@ router.get("/:userId", async (req, res) => {
       .status(500)
       .json({ message: "Error getting transaction summary for user:", error });
   }
-});
-
-export default router;
+}

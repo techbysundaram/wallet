@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { sql } from "./config/db.js";
 import rateLimiter from "./middleware/rateLimiter.js";
-import transactionRoutes from "./routes/transactionRoutes.js";
+import transactionRoutes from "./routes/transactionRoute.js";
 dotenv.config();
 
 const app = express();
@@ -32,7 +32,7 @@ async function initDB() {
   }
 }
 
-app.get("/", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({ message: "Server is working" });
 });
 
